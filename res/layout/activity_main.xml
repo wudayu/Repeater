@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark"
+    tools:context=".MainActivity" >
+
+    <ProgressBar android:id="@+id/spinner"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
+    <SeekBar
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:padding="18dp"
+        android:layout_margin="10dp"
+        android:progressDrawable="@android:drawable/progress_horizontal" />
+
+    <Button
+        android:id="@+id/btnApoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btnApoint"
+        android:layout_below="@id/progress"
+        android:layout_alignLeft="@id/progress" />
+
+    <Button
+        android:id="@+id/btnBpoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btnBpoint"
+        android:layout_below="@id/progress"
+        android:layout_alignRight="@id/progress" />
+
+    <Button
+        android:id="@+id/btnPlayHold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btnPlayHoldStatePlaying"
+        android:layout_below="@id/progress"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

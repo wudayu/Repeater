@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Repeater</string>
+    <string name="action_settings">Settings</string>
+    <string name="playback_failed">The player doesn\'t support this type of audio file.</string>
+    <string name="btnApoint"> A </string>
+    <string name="btnBpoint"> B </string>
+    <string name="btnPlayHoldStatePlaying">Playing</string>
+    <string name="btnPlayHoldStateHold">Holding</string>
+
+</resources>
