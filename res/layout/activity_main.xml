@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
+    android:background="#7373B9"
     tools:context=".MainActivity" >
 
     <ProgressBar android:id="@+id/spinner"
@@ -19,8 +19,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:padding="18dp"
-        android:layout_margin="10dp"
-        android:progressDrawable="@android:drawable/progress_horizontal" />
+        android:layout_margin="10dp" />
 
     <Button
         android:id="@+id/btnApoint"

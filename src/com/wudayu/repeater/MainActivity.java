@@ -128,9 +128,11 @@ public class MainActivity extends Activity implements OnPreparedListener, OnErro
 			@Override
 			public void onClick(View v) {
 				if (mPlayer.isPlaying()) {
+					btnPlayHold.setText(getString(R.string.btnPlayHoldStateHold));
 					mPlayer.pause();
 					doingRepeat = false;
 				} else {
+					btnPlayHold.setText(getString(R.string.btnPlayHoldStatePlaying));
 					mPlayer.start();
 				}
 			}
@@ -230,8 +232,10 @@ public class MainActivity extends Activity implements OnPreparedListener, OnErro
 
     @Override
     public void onUserLeaveHint() {
-        stopPlayback();
-        finish();
+
+        //stopPlayback();
+        //finish();
+
         super.onUserLeaveHint();
     }
 
@@ -399,10 +403,8 @@ public class MainActivity extends Activity implements OnPreparedListener, OnErro
         }
         if (mPlayer.isPlaying()) {
             mPlayer.pause();
-            btnPlayHold.setText(getString(R.string.btnPlayHoldStateHold));
         } else {
             start();
-            btnPlayHold.setText(getString(R.string.btnPlayHoldStatePlaying));
         }
         //updatePlayPause();
     }
