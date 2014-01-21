@@ -5,13 +5,6 @@
     android:background="#7373B9"
     tools:context=".MainActivity" >
 
-    <ProgressBar android:id="@+id/spinner"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" />
-
     <SeekBar
         android:id="@+id/progress"
         android:layout_width="match_parent"
@@ -22,26 +15,26 @@
         android:layout_margin="10dp" />
 
     <Button
-        android:id="@+id/btnApoint"
+        android:id="@+id/btn_apoint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btnApoint"
+        android:text="@string/btn_apoint"
         android:layout_below="@id/progress"
         android:layout_alignLeft="@id/progress" />
 
     <Button
-        android:id="@+id/btnBpoint"
+        android:id="@+id/btn_bpoint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btnBpoint"
+        android:text="@string/btn_bpoint"
         android:layout_below="@id/progress"
         android:layout_alignRight="@id/progress" />
 
     <Button
-        android:id="@+id/btnPlayHold"
+        android:id="@+id/btn_play_hold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btnPlayHoldStatePlaying"
+        android:text="@string/btn_play_hold_state_playing"
         android:layout_below="@id/progress"
         android:layout_centerHorizontal="true" />
 
