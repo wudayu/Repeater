@@ -12,7 +12,6 @@
     <string name="btn_playmode_normal">Normal</string>
     <string name="btn_playmode_loop">Loop</string>
     <string name="btn_playmode_section_loop">Section</string>
-    <string name="txt_playmode">Playmode : </string>
     <string name="str_set_pointa_failed">Failed to set point A</string>
     <string name="str_set_pointb_failed">Failed to set point B</string>
 

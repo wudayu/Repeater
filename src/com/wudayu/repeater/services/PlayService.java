@@ -67,8 +67,11 @@ public class PlayService extends Service {
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		if (!isSame)
+		if (!isSame) {
 			prepare(mUri);
+			pointA = 0;
+			pointB = mDuration;
+		}
 
 		startTimerTask();
 
@@ -129,7 +132,7 @@ public class PlayService extends Service {
 				mPlayer.start();
 		}
 
-		public boolean isPlaying() {
+		public boolean playBackIsPlaying() {
 			if (mPlayer != null)
 				return mPlayer.isPlaying();
 			else
@@ -152,6 +155,14 @@ public class PlayService extends Service {
 			pointB = val;
 		}
 
+		public int getPoingA() {
+			return pointA;
+		}
+
+		public int getPointB() {
+			return pointB;
+		}
+
 		public Uri getUri() {
 			return mUri;
 		}
@@ -159,7 +170,7 @@ public class PlayService extends Service {
 	}
 
 	public int getCurrentPosition() {
-		if (mPlayer != null && mPlayer.isPlaying())
+		if (mPlayer != null)
 			return mPlayer.getCurrentPosition();
 
 		return 0;
@@ -232,6 +243,6 @@ public class PlayService extends Service {
 			}
 		};
 
-		sectionLoopTimer.scheduleAtFixedRate(sectionLoopTimerTask, 0, 10);
+		sectionLoopTimer.schedule(sectionLoopTimerTask, 0, 50);
 	}
 }

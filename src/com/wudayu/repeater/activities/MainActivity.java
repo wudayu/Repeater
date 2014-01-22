@@ -18,10 +18,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wudayu.repeater.R;
 import com.wudayu.repeater.services.PlayService;
+import com.wudayu.repeater.utils.FormatHelper;
 
 public class MainActivity extends Activity {
 
@@ -38,6 +40,10 @@ public class MainActivity extends Activity {
     Button btnBPoint;
     Button btnPlayMode;
     SeekBar processBar;
+    TextView txtCurrentTime;
+    TextView txtDurationTime;
+    TextView txtPointA;
+    TextView txtPointB;
 
     private String currSong;
     private int mDuration;
@@ -59,6 +65,10 @@ public class MainActivity extends Activity {
 		btnBPoint = (Button) findViewById(R.id.btn_bpoint);
 		btnPlayMode = (Button) findViewById(R.id.btn_playmode);
 		processBar = (SeekBar) findViewById(R.id.progress);
+		txtCurrentTime = (TextView) findViewById(R.id.txt_current_time);
+		txtDurationTime = (TextView) findViewById(R.id.txt_duration_time);
+		txtPointA = (TextView) findViewById(R.id.txt_point_a);
+		txtPointB = (TextView) findViewById(R.id.txt_point_b);
 
 		btnPlayHold.setOnClickListener(new BtnPlayHoldOnClickListener());
 		btnAPoint.setOnClickListener(new BtnAPointOnClickListener());
@@ -89,8 +99,22 @@ public class MainActivity extends Activity {
 	private class BtnPlayHoldOnClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			
+			if (playBinder.playBackIsPlaying()) {
+				pauseThePlay();
+			} else {
+				continueThePlay();
+			}
 		}
+	}
+
+	private void pauseThePlay() {
+		playBinder.playBackPause();
+		btnPlayHold.setText(R.string.btn_play_hold_state_hold);
+	}
+
+	private void continueThePlay() {
+		playBinder.playBackContinue();
+		btnPlayHold.setText(R.string.btn_play_hold_state_playing);
 	}
 
 	private class BtnAPointOnClickListener implements View.OnClickListener {
@@ -127,6 +151,7 @@ public class MainActivity extends Activity {
 				boolean fromUser) {
 			if (fromUser) {
 				playBinder.playBackSeekTo(progress);
+				continueThePlay();
             }
 		}
 
@@ -147,6 +172,11 @@ public class MainActivity extends Activity {
         public void run() {
             if (!mSeeking && mDuration != 0) {
                 processBar.setProgress(playBinder.playBackGetCurrentPosition());
+
+                txtCurrentTime.setText(FormatHelper.timeFormatter(playBinder.playBackGetCurrentPosition()));
+                txtDurationTime.setText(FormatHelper.timeFormatter(playBinder.playBackGetDuration()));
+                txtPointA.setText(FormatHelper.timeFormatter(playBinder.getPoingA()));
+                txtPointB.setText(FormatHelper.timeFormatter(playBinder.getPointB()));
             }
 
             mProgressRefresher.removeCallbacksAndMessages(null);
@@ -169,8 +199,6 @@ public class MainActivity extends Activity {
 				currSong = mUri.toString().substring(mUri.toString().lastIndexOf('/') + 1);
 				mDuration = playBinder.playBackGetDuration();
 				processBar.setMax(mDuration);
-				playBinder.setPointA(0);
-				playBinder.setPointB(mDuration);
 				mProgressRefresher.postDelayed(new ProgressRefresher(), 100);
 			}
 		};
@@ -215,15 +243,15 @@ public class MainActivity extends Activity {
 	private void changePlayMode(int mode) {
 		switch (mode) {
 			case PlayService.PLAYMODE_LOOP:
-				btnPlayMode.setText(getString(R.string.btn_playmode_loop));
+				btnPlayMode.setText(R.string.btn_playmode_loop);
 				playBinder.setPlayMode(PlayService.PLAYMODE_LOOP);
 				break;
 			case PlayService.PLAYMODE_SECTION_LOOP:
-				btnPlayMode.setText(getString(R.string.btn_playmode_section_loop));
+				btnPlayMode.setText(R.string.btn_playmode_section_loop);
 				playBinder.setPlayMode(PlayService.PLAYMODE_SECTION_LOOP);
 				break;
 			case PlayService.PLAYMODE_NORMAL:
-				btnPlayMode.setText(getString(R.string.btn_playmode_normal));
+				btnPlayMode.setText(R.string.btn_playmode_normal);
 				playBinder.setPlayMode(PlayService.PLAYMODE_NORMAL);
 				break;
 		}
