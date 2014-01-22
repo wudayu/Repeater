@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#7373B9"
+    android:background="@android:color/background_dark"
     tools:context=".MainActivity" >
 
     <SeekBar
@@ -15,10 +15,29 @@
         android:layout_margin="10dp" />
 
     <Button
+        android:id="@+id/btn_playmode"
+        android:layout_width="100sp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/background_light"
+        android:text="@string/btn_playmode_normal"
+        android:layout_alignRight="@id/progress" />
+
+    <TextView
+        android:id="@+id/txt_playmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_playmode"
+        android:textSize="20sp"
+        android:textColor="@android:color/background_light"
+        android:layout_toLeftOf="@id/btn_playmode"
+        android:layout_alignBaseline="@+id/btn_playmode" />
+
+    <Button
         android:id="@+id/btn_apoint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_apoint"
+        android:textColor="@android:color/background_light"
         android:layout_below="@id/progress"
         android:layout_alignLeft="@id/progress" />
 
@@ -27,6 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_bpoint"
+        android:textColor="@android:color/background_light"
         android:layout_below="@id/progress"
         android:layout_alignRight="@id/progress" />
 
@@ -35,6 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_play_hold_state_playing"
+        android:textColor="@android:color/background_light"
         android:layout_below="@id/progress"
         android:layout_centerHorizontal="true" />
 

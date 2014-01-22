@@ -1,6 +1,8 @@
 package com.wudayu.repeater.services;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Intent;
@@ -24,31 +26,51 @@ import android.util.Log;
  **/
 public class PlayService extends Service {
 
-	public final static String TAG = "PlayService";
+	public final static String TAG = "com.wudayu.repeater.services.PlayService";
+	public final static int PLAYMODE_NORMAL = 0x11;
+	public final static int PLAYMODE_LOOP = 0x12;
+	public final static int PLAYMODE_SECTION_LOOP = 0x13;
+	public final static int[] PLAYMODE = { PLAYMODE_NORMAL, PLAYMODE_LOOP,
+			PLAYMODE_SECTION_LOOP };
 
+	private Timer sectionLoopTimer = new Timer();
+	private TimerTask sectionLoopTimerTask;
 	private IBinder playBinder = new PlayBinder();
 	private MediaPlayer mPlayer;
 	private Uri mUri;
 
+	private boolean isRunning;
+	private boolean isSame;
 	private int mDuration;
+	private int mPlaymode;
+	private int pointA;
+	private int pointB;
 
 	@Override
 	public void onCreate() {
-		// initialize the player
 		mPlayer = new MediaPlayer();
 		super.onCreate();
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		mUri = intent.getData();
+		isRunning = true;
+		isSame = false;
+
+		if (mUri != null && (mUri.equals(intent.getData()) || (intent.getData() == null)))
+			isSame = true;
+		if (intent.getData() != null)
+			mUri = intent.getData();
 
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		prepare(mUri);
+		if (!isSame)
+			prepare(mUri);
+
+		startTimerTask();
 
 		return playBinder;
 	}
@@ -62,9 +84,10 @@ public class PlayService extends Service {
 	public boolean onUnbind(Intent intent) {
 		return super.onUnbind(intent);
 	}
-	
+
 	@Override
 	public void onDestroy() {
+		isRunning = false;
 		mPlayer.release();
 		mPlayer = null;
 
@@ -88,10 +111,7 @@ public class PlayService extends Service {
 		}
 
 		public int playBackGetCurrentPosition() {
-			if (mPlayer != null && mPlayer.isPlaying())
-				return mPlayer.getCurrentPosition();
-
-			return 0;
+			return getCurrentPosition();
 		}
 
 		public void playBackSeekTo(int msec) {
@@ -108,14 +128,67 @@ public class PlayService extends Service {
 			if (mPlayer != null)
 				mPlayer.start();
 		}
+
+		public boolean isPlaying() {
+			if (mPlayer != null)
+				return mPlayer.isPlaying();
+			else
+				return false;
+		}
+
+		public void setPlayMode(int mode) {
+			mPlaymode = mode;
+		}
+
+		public int getPlayMode() {
+			return mPlaymode;
+		}
+
+		public void setPointA(int val) {
+			pointA = val;
+		}
+
+		public void setPointB(int val) {
+			pointB = val;
+		}
+
+		public Uri getUri() {
+			return mUri;
+		}
+
+	}
+
+	public int getCurrentPosition() {
+		if (mPlayer != null && mPlayer.isPlaying())
+			return mPlayer.getCurrentPosition();
+
+		return 0;
 	}
 
 	private Boolean prepare(Uri mUri) {
 		mDuration = 0;
+		mPlaymode = PLAYMODE[0];
 		mPlayer.stop();
 		mPlayer.reset();
 
 		mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				switch (mPlaymode) {
+					case PlayService.PLAYMODE_LOOP:
+						mp.start();
+						break;
+					case PlayService.PLAYMODE_SECTION_LOOP:
+						mp.start();
+						mp.seekTo(pointA);
+						break;
+					case PlayService.PLAYMODE_NORMAL:
+						break;
+				}
+			}
+		});
+
 		try {
 			mPlayer.setDataSource(getApplicationContext(), mUri);
 			mPlayer.prepare();
@@ -140,5 +213,25 @@ public class PlayService extends Service {
 		}
 
 		return true;
+	}
+
+	private void startTimerTask() {
+		sectionLoopTimer = new Timer();
+		sectionLoopTimerTask = new TimerTask() {
+			@Override
+			public void run() {
+				if (!isRunning) {
+					sectionLoopTimer.cancel();
+					sectionLoopTimer.purge();
+					return;
+				}
+
+				if ((mPlaymode == PlayService.PLAYMODE_SECTION_LOOP)
+						&& (getCurrentPosition() >= pointB || getCurrentPosition() < pointA))
+					mPlayer.seekTo(pointA);
+			}
+		};
+
+		sectionLoopTimer.scheduleAtFixedRate(sectionLoopTimerTask, 0, 10);
 	}
 }

@@ -9,5 +9,11 @@
     <string name="btn_bpoint"> B </string>
     <string name="btn_play_hold_state_playing">Playing</string>
     <string name="btn_play_hold_state_hold">Holding</string>
+    <string name="btn_playmode_normal">Normal</string>
+    <string name="btn_playmode_loop">Loop</string>
+    <string name="btn_playmode_section_loop">Section</string>
+    <string name="txt_playmode">Playmode : </string>
+    <string name="str_set_pointa_failed">Failed to set point A</string>
+    <string name="str_set_pointb_failed">Failed to set point B</string>
 
 </resources>
