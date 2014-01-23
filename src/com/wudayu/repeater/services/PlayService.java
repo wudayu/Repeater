@@ -45,6 +45,7 @@ public class PlayService extends Service {
 	private int mPlaymode;
 	private int pointA;
 	private int pointB;
+    private int playModeIter;
 
 	@Override
 	public void onCreate() {
@@ -69,6 +70,7 @@ public class PlayService extends Service {
 	public IBinder onBind(Intent intent) {
 		if (!isSame) {
 			prepare(mUri);
+			playModeIter = 0;
 			pointA = 0;
 			pointB = mDuration;
 		}
@@ -165,6 +167,14 @@ public class PlayService extends Service {
 
 		public Uri getUri() {
 			return mUri;
+		}
+
+		public int incPlayModeIter() {
+			return (++playModeIter) % PlayService.PLAYMODE.length;
+		}
+
+		public int getPlayModeIter() {
+			return playModeIter;
 		}
 
 	}

@@ -48,7 +48,6 @@ public class MainActivity extends Activity {
     private String currSong;
     private int mDuration;
     private boolean mSeeking = false;
-    private int playModeIter = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +140,7 @@ public class MainActivity extends Activity {
 	private class BtnPlayModeOnClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			changePlayMode(PlayService.PLAYMODE[(++playModeIter) % PlayService.PLAYMODE.length]);
+			changePlayMode(PlayService.PLAYMODE[playBinder.incPlayModeIter()]);
 		}
 	}
 
@@ -199,11 +198,12 @@ public class MainActivity extends Activity {
 				currSong = mUri.toString().substring(mUri.toString().lastIndexOf('/') + 1);
 				mDuration = playBinder.playBackGetDuration();
 				processBar.setMax(mDuration);
+				changePlayMode(PlayService.PLAYMODE[playBinder.getPlayModeIter()]);
 				mProgressRefresher.postDelayed(new ProgressRefresher(), 100);
 			}
 		};
-		
-		bindService(playServiceIntent, sConnection, Context.BIND_AUTO_CREATE);
+
+		bindService(playServiceIntent, sConnection, Context.BIND_NOT_FOREGROUND);
 
 		super.onStart();
 	}
@@ -211,6 +211,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		unbindService(sConnection);
+		showNotification();
 
 		super.onStop();
 	}
@@ -259,10 +260,11 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		/*
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			showNotification();
 		}
-
+		*/
 		return super.onKeyDown(keyCode, event);
 	}
 
