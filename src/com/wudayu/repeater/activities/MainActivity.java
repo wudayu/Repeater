@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +47,7 @@ public class MainActivity extends Activity {
     private String currSong;
     private int mDuration;
     private boolean mSeeking = false;
+    private boolean isExit = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -203,7 +203,7 @@ public class MainActivity extends Activity {
 			}
 		};
 
-		bindService(playServiceIntent, sConnection, Context.BIND_NOT_FOREGROUND);
+		bindService(playServiceIntent, sConnection, Context.BIND_IMPORTANT);
 
 		super.onStart();
 	}
@@ -211,7 +211,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		unbindService(sConnection);
-		showNotification();
+		if (!isExit)
+			showNotification();
 
 		super.onStop();
 	}
@@ -233,6 +234,7 @@ public class MainActivity extends Activity {
 			case R.id.action_settings:
 				break;
 			case R.id.action_exit:
+				isExit = true;
 				stopService(playServiceIntent);
 				MainActivity.this.finish();
 				break;
@@ -256,16 +258,6 @@ public class MainActivity extends Activity {
 				playBinder.setPlayMode(PlayService.PLAYMODE_NORMAL);
 				break;
 		}
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		/*
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			showNotification();
-		}
-		*/
-		return super.onKeyDown(keyCode, event);
 	}
 
 	private void showNotification() {
