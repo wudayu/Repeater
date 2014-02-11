@@ -27,6 +27,7 @@ import com.wudayu.repeater.utils.FormatHelper;
 public class MainActivity extends Activity {
 
 	public final static String TAG = "com.wudayu.repeater.activities.MainActivity";
+	public final static int NOTIFY_ID = 0xE001;
 
     private Uri mUri;
     private Intent playServiceIntent;
@@ -54,7 +55,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		super.onCreate(savedInstanceState);
+		clearNotification();
 
 		Intent intent = getIntent();
         initializeService(intent);
@@ -264,7 +265,6 @@ public class MainActivity extends Activity {
 		NotificationManager mNotificationManager =
 				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		int notifyID = 1;
 		Intent resultIntent = new Intent(this, MainActivity.class);
 		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.this, 0, resultIntent, 0);
 		NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
@@ -276,6 +276,14 @@ public class MainActivity extends Activity {
 				.setAutoCancel(true)
 				.setOngoing(true);
 
-		mNotificationManager.notify(notifyID, mNotifyBuilder.build());
+		mNotificationManager.notify(NOTIFY_ID, mNotifyBuilder.build());
 	}
+
+	private void clearNotification() {
+		NotificationManager mNotificationManager =
+				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		mNotificationManager.cancel(NOTIFY_ID);
+	}
+
 }

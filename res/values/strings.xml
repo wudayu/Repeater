@@ -14,5 +14,6 @@
     <string name="btn_playmode_section_loop">Section</string>
     <string name="str_set_pointa_failed">Failed to set point A</string>
     <string name="str_set_pointb_failed">Failed to set point B</string>
+    <string name="str_prepare_failed">Please restart RPT, something went wrong.</string>
 
 </resources>

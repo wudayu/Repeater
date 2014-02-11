@@ -54,6 +54,7 @@ public final class R {
         public static final int btn_playmode_normal=0x7f050008;
         public static final int btn_playmode_section_loop=0x7f05000a;
         public static final int playback_failed=0x7f050003;
+        public static final int str_prepare_failed=0x7f05000d;
         public static final int str_set_pointa_failed=0x7f05000b;
         public static final int str_set_pointb_failed=0x7f05000c;
     }

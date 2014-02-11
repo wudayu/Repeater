@@ -1,17 +1,20 @@
 package com.wudayu.repeater.services;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.wudayu.repeater.R;
 
 
 /**
@@ -63,12 +66,23 @@ public class PlayService extends Service {
 		if (intent.getData() != null)
 			mUri = intent.getData();
 
+		if (mUri == null) {
+			SharedPreferences sharedPreferences = getSharedPreferences("playUri", MODE_PRIVATE);
+			mUri = new Uri.Builder().encodedPath(sharedPreferences.getString("mUri", null)).build();
+		} else {
+			SharedPreferences sharedPreferences = getSharedPreferences("playUri", MODE_PRIVATE);
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putString("mUri", mUri.toString());
+			editor.commit();
+		}
+
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
 		if (!isSame) {
+Log.i(TAG, mUri.toString());
 			prepare(mUri);
 			playModeIter = 0;
 			pointA = 0;
@@ -93,7 +107,8 @@ public class PlayService extends Service {
 	@Override
 	public void onDestroy() {
 		isRunning = false;
-		mPlayer.release();
+		if (mPlayer != null)
+			mPlayer.release();
 		mPlayer = null;
 
 		super.onDestroy();
@@ -215,21 +230,10 @@ public class PlayService extends Service {
 			mPlayer.prepare();
 			mDuration = mPlayer.getDuration();
 			mPlayer.start();
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
 			Log.w(TAG, e.toString());
 			e.printStackTrace();
-			return false;
-		} catch (SecurityException e) {
-			Log.w(TAG, e.toString());
-			e.printStackTrace();
-			return false;
-		} catch (IllegalStateException e) {
-			Log.w(TAG, e.toString());
-			e.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			Log.w(TAG, e.toString());
-			e.printStackTrace();
+			Toast.makeText(getApplicationContext(), getString(R.string.str_prepare_failed), Toast.LENGTH_LONG).show();
 			return false;
 		}
 
