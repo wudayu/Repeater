@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="version">1.4</string>
+    <string name="author_hint">Author: </string>
+    <string name="author">David Wu (Wudayu)</string>
+    <string name="email_hint">Email: </string>
+    <string name="email">wudayu@gmail.com</string>
     <string name="app_name">Repeater</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_helps">Helps</string>
     <string name="action_exit">Exit</string>
     <string name="playback_failed">The player doesn\'t support this type of audio file.</string>
     <string name="btn_apoint"> A </string>
@@ -15,5 +20,12 @@
     <string name="str_set_pointa_failed">Failed to set point A</string>
     <string name="str_set_pointb_failed">Failed to set point B</string>
     <string name="str_prepare_failed">Please restart RPT, something went wrong.</string>
+    <string name="str_ticker_now_playing">Now playing: </string>
+    <string name="str_helps_tip_hint">Mode:</string>
+    <string name="str_helps_tip_1">Normal:The music file will be played only once.</string>
+    <string name="str_helps_tip_2">Loop:The whole music file will be repeated.</string>
+    <string name="str_helps_tip_3">Section:The music file will be repeat between A and B point.</string>
+    <string name="str_dialog_btn_positive">OK</string>
+    <string name="action_rate">Rate Me</string>
 
 </resources>

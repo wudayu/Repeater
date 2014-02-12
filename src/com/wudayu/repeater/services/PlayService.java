@@ -3,6 +3,8 @@ package com.wudayu.repeater.services;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.wudayu.repeater.R;
+import com.wudayu.repeater.activities.MainActivity;
 
 
 /**
@@ -30,6 +33,7 @@ import com.wudayu.repeater.R;
 public class PlayService extends Service {
 
 	public final static String TAG = "com.wudayu.repeater.services.PlayService";
+	public final static int NOTIFY_ID = 0xB1;
 	public final static int PLAYMODE_NORMAL = 0x11;
 	public final static int PLAYMODE_LOOP = 0x12;
 	public final static int PLAYMODE_SECTION_LOOP = 0x13;
@@ -82,7 +86,6 @@ public class PlayService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		if (!isSame) {
-Log.i(TAG, mUri.toString());
 			prepare(mUri);
 			playModeIter = 0;
 			pointA = 0;
@@ -90,7 +93,6 @@ Log.i(TAG, mUri.toString());
 		}
 
 		startTimerTask();
-
 		return playBinder;
 	}
 
@@ -111,6 +113,7 @@ Log.i(TAG, mUri.toString());
 			mPlayer.release();
 		mPlayer = null;
 
+		stopForeground(true);
 		super.onDestroy();
 	}
 
@@ -150,10 +153,7 @@ Log.i(TAG, mUri.toString());
 		}
 
 		public boolean playBackIsPlaying() {
-			if (mPlayer != null)
-				return mPlayer.isPlaying();
-			else
-				return false;
+			return mPlayer != null ? mPlayer.isPlaying() : false;
 		}
 
 		public void setPlayMode(int mode) {
@@ -185,11 +185,40 @@ Log.i(TAG, mUri.toString());
 		}
 
 		public int incPlayModeIter() {
-			return (++playModeIter) % PlayService.PLAYMODE.length;
+			playModeIter = (playModeIter + 1) % PlayService.PLAYMODE.length;
+
+			return playModeIter;
 		}
 
 		public int getPlayModeIter() {
 			return playModeIter;
+		}
+
+		public boolean isPlaying() {
+			return mPlayer.isPlaying();
+		}
+
+		@SuppressWarnings("deprecation")
+		public void useForeground(CharSequence tickerText, String currSong) {
+			Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+			/* Method 01
+			 * this method can't do what we want in Android 4.4 KitKat
+			 * it can only show the application info page which contains the 'Force Close' button.
+	 		NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(PlayService.this)
+					.setContentTitle(getString(R.string.app_name))
+					.setContentText(currSong)
+					.setTicker(tickerText)
+					.setContentIntent(pendingIntent);
+			Notification notification = mNotifyBuilder.build();
+			*/
+			/* Method 02 */
+			Notification notification = new Notification(R.drawable.ic_launcher, tickerText,
+			        System.currentTimeMillis());
+			notification.setLatestEventInfo(PlayService.this, getText(R.string.app_name),
+					currSong, pendingIntent);
+			
+			startForeground(NOTIFY_ID, notification);
 		}
 
 	}
@@ -220,6 +249,9 @@ Log.i(TAG, mUri.toString());
 						mp.seekTo(pointA);
 						break;
 					case PlayService.PLAYMODE_NORMAL:
+						mp.start();
+						mp.seekTo(0);
+						mp.pause();
 						break;
 				}
 			}

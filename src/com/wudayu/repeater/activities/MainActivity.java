@@ -1,8 +1,8 @@
 package com.wudayu.repeater.activities;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +26,6 @@ import com.wudayu.repeater.utils.FormatHelper;
 public class MainActivity extends Activity {
 
 	public final static String TAG = "com.wudayu.repeater.activities.MainActivity";
-	public final static int NOTIFY_ID = 0xE001;
 
     private Uri mUri;
     private Intent playServiceIntent;
@@ -48,14 +46,11 @@ public class MainActivity extends Activity {
     private String currSong;
     private int mDuration;
     private boolean mSeeking = false;
-    private boolean isExit = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		clearNotification();
 
 		Intent intent = getIntent();
         initializeService(intent);
@@ -151,7 +146,6 @@ public class MainActivity extends Activity {
 				boolean fromUser) {
 			if (fromUser) {
 				playBinder.playBackSeekTo(progress);
-				continueThePlay();
             }
 		}
 
@@ -177,10 +171,16 @@ public class MainActivity extends Activity {
                 txtDurationTime.setText(FormatHelper.timeFormatter(playBinder.playBackGetDuration()));
                 txtPointA.setText(FormatHelper.timeFormatter(playBinder.getPoingA()));
                 txtPointB.setText(FormatHelper.timeFormatter(playBinder.getPointB()));
+
+                if (playBinder.playBackIsPlaying()) {
+                	continueThePlay();
+    			} else {
+    				pauseThePlay();
+    			}
             }
 
             mProgressRefresher.removeCallbacksAndMessages(null);
-            mProgressRefresher.postDelayed(new ProgressRefresher(), 100);
+            mProgressRefresher.postDelayed(new ProgressRefresher(), 200);
         }
     }
 
@@ -197,10 +197,11 @@ public class MainActivity extends Activity {
 
 				mUri = playBinder.getUri();
 				currSong = mUri.toString().substring(mUri.toString().lastIndexOf('/') + 1);
+				playBinder.useForeground(getText(R.string.str_ticker_now_playing) + currSong, currSong);
 				mDuration = playBinder.playBackGetDuration();
 				processBar.setMax(mDuration);
 				changePlayMode(PlayService.PLAYMODE[playBinder.getPlayModeIter()]);
-				mProgressRefresher.postDelayed(new ProgressRefresher(), 100);
+				mProgressRefresher.postDelayed(new ProgressRefresher(), 200);
 			}
 		};
 
@@ -212,8 +213,6 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		unbindService(sConnection);
-		if (!isExit)
-			showNotification();
 
 		super.onStop();
 	}
@@ -232,16 +231,50 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.action_settings:
+			case R.id.action_helps:
+				helpsInfo();
+				break;
+			case R.id.action_rate:
+				rateme();
 				break;
 			case R.id.action_exit:
-				isExit = true;
 				stopService(playServiceIntent);
 				MainActivity.this.finish();
 				break;
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void helpsInfo() {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+				.setTitle(getString(R.string.action_helps))
+				.setMessage(
+						getString(R.string.app_name) + " "
+								+ getString(R.string.version) + "\n\n"
+								+ getString(R.string.str_helps_tip_hint) + "\n\t"
+								+ getString(R.string.str_helps_tip_1) + "\n\n\t"
+								+ getString(R.string.str_helps_tip_2) + "\n\n\t"
+								+ getString(R.string.str_helps_tip_3) + "\n\n"
+								+ getString(R.string.author_hint)
+								+ getString(R.string.author) + "\n"
+								+ getString(R.string.email_hint)
+								+ getString(R.string.email))
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setPositiveButton(getString(R.string.str_dialog_btn_positive), null);
+
+		dialog.show();
+	}
+
+	private void rateme() {
+		Uri uri = Uri.parse("market://details?id=" + getPackageName());
+		Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+		try {
+			startActivity(goToMarket);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(this, "Could not connect the Play",
+					Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private void changePlayMode(int mode) {
@@ -259,31 +292,6 @@ public class MainActivity extends Activity {
 				playBinder.setPlayMode(PlayService.PLAYMODE_NORMAL);
 				break;
 		}
-	}
-
-	private void showNotification() {
-		NotificationManager mNotificationManager =
-				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-		Intent resultIntent = new Intent(this, MainActivity.class);
-		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.this, 0, resultIntent, 0);
-		NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
-				.setContentTitle(getString(R.string.app_name))
-				.setContentText(currSong)
-				.setTicker(currSong)
-				.setContentIntent(resultPendingIntent)
-				.setSmallIcon(R.drawable.ic_launcher)
-				.setAutoCancel(true)
-				.setOngoing(true);
-
-		mNotificationManager.notify(NOTIFY_ID, mNotifyBuilder.build());
-	}
-
-	private void clearNotification() {
-		NotificationManager mNotificationManager =
-				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-		mNotificationManager.cancel(NOTIFY_ID);
 	}
 
 }
