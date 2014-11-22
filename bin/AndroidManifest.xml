@@ -3,13 +3,10 @@
     package="com.wudayu.repeater"
     android:versionCode="3"
     android:versionName="1.12" >
-
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -17,42 +14,50 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleInstance"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true" >
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleInstance" >
             <intent-filter>
-	            <action android:name="android.intent.action.VIEW" />
-	            <category android:name="android.intent.category.DEFAULT" />
-	            <data android:scheme="file"/>
-	            <data android:mimeType="audio/*"/>
-	            <data android:mimeType="application/ogg"/>
-	            <data android:mimeType="application/x-ogg"/>
-	            <data android:mimeType="application/itunes"/>
-	        </intent-filter>
-	        <intent-filter>
-	            <action android:name="android.intent.action.VIEW" />
-	            <category android:name="android.intent.category.DEFAULT" />
-	            <category android:name="android.intent.category.BROWSABLE" />
-	            <data android:scheme="http" />
-	            <data android:mimeType="audio/*"/>
-	            <data android:mimeType="application/ogg"/>
-	            <data android:mimeType="application/x-ogg"/>
-	            <data android:mimeType="application/itunes"/>
-	        </intent-filter>
-	        <intent-filter
-	            android:priority="-1">
-	            <action android:name="android.intent.action.VIEW" />
-	            <category android:name="android.intent.category.DEFAULT" />
-	            <category android:name="android.intent.category.BROWSABLE" />
-	            <data android:scheme="content" />
-	            <data android:mimeType="audio/*"/>
-	            <data android:mimeType="application/ogg"/>
-	            <data android:mimeType="application/x-ogg"/>
-	            <data android:mimeType="application/itunes"/>
-	        </intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="file" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+            <intent-filter android:priority="-1" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
         </activity>
         <service android:name=".services.PlayService" />
+        <receiver android:name=".receiver.PlayReceiver" >
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.DATA_ACTIVITY" />
+                <action android:name="android.intent.action.DATA_STATE" />
+                <action android:name="android.intent.action.BATTERY_CHANGED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="com.wudayu.repeater.play" />
+            </intent-filter>
+        </receiver>
     </application>
-
 </manifest>
